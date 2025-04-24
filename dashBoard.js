@@ -1,6 +1,15 @@
+/*
+  > histórico de revisões
+
+      - 20250424 - R01
+        - autor: Henrique
+        - observações:
+          - correção na contabilização de atividades
+*/
+
 function f_recuperaProjetos() {
-    var idPastaTodosProjetos = 'CÓDIGO-DA-PLANILHA';
-    var idMasterPlan = 'CÓDIGO-DA-PLANILHA';
+    var idPastaTodosProjetos = 'CÓDIGO DA PASTA DOS PROJETOS'; // Substitua pelo ID da pasta que contém os projetos
+    var idMasterPlan = 'CÓDIGO DO MASTERPLAN'; // Substitua pelo ID do Plano Mensal
     var pastaTodosProjetos = DriveApp.getFolderById(idPastaTodosProjetos);
     var listaProjetos = pastaTodosProjetos.getFilesByType(MimeType.GOOGLE_SHEETS);
     var MasterPlan = SpreadsheetApp.openById(idMasterPlan);
@@ -28,7 +37,7 @@ function f_recuperaProjetos() {
     // Limpa dados anteriores
     planilhaAux.getRange("U3:AH").clearContent();
   
-    // Recupera dados do PLanoMensal
+    // Recupera dados do MasterPlan
     var dadosMasterPlanH = abaMasterPlan.getRange('H:H').getValues().flat().map(String);
     var datasD = abaMasterPlan.getRange('D:D').getValues().flat();
     var datasF = abaMasterPlan.getRange('F:F').getValues().flat();
@@ -48,8 +57,6 @@ function f_recuperaProjetos() {
         // Tira planilhas gerais e planilha de modelo
         if (!nomeArquivoDaVez.includes('___modelo') && !nomeArquivoDaVez.includes('GERAL')) {
             var planilhaDaVez = SpreadsheetApp.open(arquivoDaVez);
-  
-            // Busca aba de visão geral e aux
             var abaVisaoGeral = planilhaDaVez.getSheetByName('VISÃO GERAL');
             var abaAux = planilhaDaVez.getSheetByName('aux');
   
@@ -89,16 +96,15 @@ function f_recuperaProjetos() {
                   }
               }
               
-                // Calcula percentuais e formata os valores
                 if (atividadesTotaisProjeto > 0) {
-                    var percentualTotalProjeto = (atividadesConcluidasProjeto / atividadesTotaisProjeto) * 100;
+                    var atividadesPlanejadasHoje = (atividadesTotaisProjeto - atividadesFuturasProjeto);
+                    var percentualTotalProjeto = (atividadesConcluidasProjeto / atividadesPlanejadasHoje) * 100;
                     var percentualTotalProjetoFormatado = percentualTotalProjeto.toFixed(2).replace('.', ',');
   
                     var percentualAtrasadasProjeto = (atividadesAtrasadasProjeto / atividadesTotaisProjeto) * 100;
                     var percentualAtrasadasProjetoFormatado = percentualAtrasadasProjeto.toFixed(2).replace('.', ',');
   
-                    var atividadesFuturasTotais = atividadesFuturasProjeto + atividadesTotaisProjeto;
-                    var percentualAtividadesAtuais = atividadesConcluidasProjeto / atividadesFuturasTotais * 100;
+                    var percentualAtividadesAtuais = atividadesConcluidasProjeto / atividadesTotaisProjeto * 100;
                     var percentualAtividadesAtuaisFormatado = percentualAtividadesAtuais.toFixed(2).replace('.', ',');    
   
                     // Escreve os dados linha a linha
@@ -124,3 +130,4 @@ function f_recuperaProjetos() {
   
     Logger.log("Dados atualizados na aba '_aux' com sucesso!");
   }
+  
