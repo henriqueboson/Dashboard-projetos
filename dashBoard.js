@@ -1,15 +1,31 @@
 /*
+  > função para recuperar dados totais dos projetos diversos, Masterplan e popular dashboard de indicadores macro
+  
   > histórico de revisões
-
-      - 20250424 - R01
+      - 20250408 - R01
+        - autor: Henrique
+        - observações:
+          - adição de condição para verificar se linha de base passa do dia atual
+    
+      - 20250416 - R02
+        - autor: Henrique
+        - observações:
+          - adição de nova coluna no dashboard para mostrar percentual de atividades atuais em relação ao total de atividades (incluindo as futuras)
+      
+      - 20250424 - R03
         - autor: Henrique
         - observações:
           - correção na contabilização de atividades
+
+      - 20250430 - R04
+        - autor: Henrique
+        - observações:  
+          - correção no calculo de aderência
 */
 
 function f_recuperaProjetos() {
-    var idPastaTodosProjetos = 'CÓDIGO DA PASTA DOS PROJETOS'; // Substitua pelo ID da pasta que contém os projetos
-    var idMasterPlan = 'CÓDIGO DO MASTERPLAN'; // Substitua pelo ID do Plano Mensal
+    var idPastaTodosProjetos = '1ks6Xd7omPAVga2-BC6mKXHmmyCMIDnyJ';
+    var idMasterPlan = '1GRDCd5BglJiNHjNdG1dNsJtPKHKPc2oUYuhdxo6lqD4';
     var pastaTodosProjetos = DriveApp.getFolderById(idPastaTodosProjetos);
     var listaProjetos = pastaTodosProjetos.getFilesByType(MimeType.GOOGLE_SHEETS);
     var MasterPlan = SpreadsheetApp.openById(idMasterPlan);
@@ -83,8 +99,8 @@ function f_recuperaProjetos() {
               
                   if (!(dataD instanceof Date) || isNaN(dataD)) continue; // Ignora atividades sem data planejada válida
               
-                  if (dataD > dataAtual){
-                      atividadesFuturasProjeto++;  // Contabiliza atividades planejadas para o futuro 
+                  if (dataD > dataAtual && isNaN(dataF)) {
+                      atividadesFuturasProjeto++;  // Contabiliza atividades planejadas para o futuro excluindo as concluídas com antecedência
                   }
               
                   atividadesTotaisProjeto++; // Contabiliza atividade válida
@@ -130,4 +146,3 @@ function f_recuperaProjetos() {
   
     Logger.log("Dados atualizados na aba '_aux' com sucesso!");
   }
-  
